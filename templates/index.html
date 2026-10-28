@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Gadget AI Dropshipping Assistant</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Navigation Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i class="fa-solid fa-microchip text-lg"></i>
+        </div>
+        <div>
+          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">GadgetBot AI</span>
+          <span class="text-xs ml-2 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">Shopify Dropship Helper</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Shopify Status Indicator -->
+        <div id="shopify-status-badge" class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="shopify-status-text">Shopify Not Connected</span>
+        </div>
+
+        <button onclick="openSettingsModal()" class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
+          <i class="fa-solid fa-gear text-slate-500"></i>
+          <span>Settings</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Product Selection & Sourcing (5 cols) -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Source Selector Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+            Select or Source Gadget
+          </h2>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-200 mb-5">
+          <button id="tab-trending-btn" onclick="switchSourceTab('trending')" class="flex-1 pb-3 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-fire text-amber-500"></i> Viral Winners
+          </button>
+          <button id="tab-url-btn" onclick="switchSourceTab('url')" class="flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-link"></i> Web / Supplier URL
+          </button>
+          <button id="tab-custom-btn" onclick="switchSourceTab('custom')" class="flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-pen-to-square"></i> Manual Input
+          </button>
+        </div>
+
+        <!-- Tab 1: Viral Winners Gallery -->
+        <div id="tab-trending" class="space-y-3">
+          <p class="text-xs text-slate-500 mb-2">Pre-vetted smart gadgets with high viral potential on TikTok & Reels:</p>
+          <div id="trending-gadgets-list" class="space-y-2.5 max-h-[480px] overflow-y-auto pr-1">
+            <!-- Loaded dynamically via JS -->
+            <div class="text-center py-8 text-xs text-slate-400">Loading trending winners...</div>
+          </div>
+        </div>
+
+        <!-- Tab 2: URL Scraper -->
+        <div id="tab-url" class="hidden space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Product Link (AliExpress, CJ Dropshipping, Amazon, etc.)</label>
+            <div class="flex gap-2">
+              <input type="url" id="extract-url-input" placeholder="https://www.aliexpress.com/item/..." class="flex-1 text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button onclick="extractFromUrl()" id="extract-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Fetch
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1.5">Bot will extract title, specifications, and images automatically.</p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Manual Input -->
+        <div id="tab-custom" class="hidden space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Raw Gadget Name / Supplier Title</label>
+            <input type="text" id="manual-title-input" placeholder="e.g. 2024 Levitating Magnetic Moon Lamp 3D Touch" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Raw Features &amp; Specifications</label>
+            <textarea id="manual-desc-input" rows="4" placeholder="Enter supplier features, specs, battery size, etc." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pricing Formula Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+          <i class="fa-solid fa-calculator text-blue-600"></i> Profit Margin &amp; Pricing Formula
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-medium text-slate-500 mb-1">Supplier Cost ($)</label>
+            <input type="number" id="supplier-cost-input" value="15.00" step="0.50" onchange="recalculatePricing()" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-slate-500 mb-1">Target Markup Multiplier</label>
+            <select id="price-multiplier-select" onchange="recalculatePricing()" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg bg-white">
+              <option value="2.0">2.0x Cost (Fast volume)</option>
+              <option value="2.5" selected>2.5x Cost (Recommended)</option>
+              <option value="3.0">3.0x Cost (High profit)</option>
+              <option value="3.5">3.5x Cost (Premium brand)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-slate-500 block text-[11px]">Est. Retail Price:</span>
+            <span id="preview-price-display" class="text-base font-extrabold text-blue-700">$39.99</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[11px]">Compare-At (Anchor):</span>
+            <span id="preview-compare-display" class="text-xs font-semibold text-slate-400 line-through">$59.99</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[11px]">Net Profit / Sale:</span>
+            <span id="preview-profit-display" class="text-xs font-bold text-emerald-600">+$24.99</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: AI Enhancement & Shopify Exporter (7 cols) -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- AI Generator / Editor Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+            AI Content Optimization
+          </h2>
+          <button onclick="runAIEnhancement()" id="ai-enhance-btn" class="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-sparkles"></i>
+            <span>Generate with AI</span>
+          </button>
+        </div>
+
+        <!-- Editable Title -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Optimized Shopify Product Title</label>
+          <input type="text" id="final-title" placeholder="Click 'Generate with AI' or select a winning gadget..." class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Pricing Fields in Editor -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Selling Price ($)</label>
+            <input type="text" id="final-price" value="39.99" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Compare-at Price ($)</label>
+            <input type="text" id="final-compare-price" value="59.99" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
+          </div>
+        </div>
+
+        <!-- Product Tags -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Shopify Product Tags</label>
+          <input type="text" id="final-tags" value="Smart Gadgets, Trending, TikTok Made Me Buy It, Best Sellers" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg">
+        </div>
+
+        <!-- Image URLs list -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Product Images (URLs)</label>
+          <div id="image-previews" class="flex flex-wrap gap-2 mb-2 min-h-[50px] p-2 bg-slate-50 border border-dashed border-slate-200 rounded-lg items-center">
+            <span class="text-xs text-slate-400">Images will preview here</span>
+          </div>
+          <input type="text" id="final-image-input" placeholder="Comma separated image URLs" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg">
+        </div>
+
+        <!-- Description View Switcher (Rich HTML vs Preview) -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-semibold text-slate-700">Product Description (HTML)</label>
+            <div class="flex space-x-2 text-[11px]">
+              <button type="button" onclick="toggleDescTab('preview')" id="desc-tab-preview" class="px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700">Visual Preview</button>
+              <button type="button" onclick="toggleDescTab('code')" id="desc-tab-code" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-800">HTML Code</button>
+            </div>
+          </div>
+          <div id="desc-preview-container" class="border border-slate-200 rounded-lg p-4 max-h-72 overflow-y-auto bg-white text-xs">
+            <p class="text-slate-400 italic">Product description preview will appear here...</p>
+          </div>
+          <textarea id="final-body-html" rows="8" class="hidden w-full text-xs font-mono p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Step 3: Shopify Exporter Card -->
+      <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-lg space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-white text-blue-900 text-xs font-bold">3</span>
+            Import Directly into Shopify
+          </h2>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-blue-200">Save as:</span>
+            <select id="import-status-select" class="bg-blue-800/80 text-white font-medium border border-blue-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
+              <option value="draft" selected>Draft (Review First)</option>
+              <option value="active">Active (Live Now)</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="text-xs text-blue-200 leading-relaxed">
+          Pushes the AI-enhanced copy, calculated retail pricing, and high-resolution images directly to your Shopify store via the Admin API.
+        </p>
+
+        <button onclick="pushToShopify()" id="push-shopify-btn" class="w-full py-3.5 bg-white hover:bg-blue-50 text-blue-900 font-extrabold text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <i class="fa-brands fa-shopify text-lg text-emerald-600"></i>
+          <span>Push Product to Shopify Store</span>
+        </button>
+
+        <!-- Result Box -->
+        <div id="import-result-box" class="hidden p-4 rounded-xl text-xs"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-blue-600"></i> Store &amp; AI Settings
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Shopify Store Domain</label>
+          <input type="text" id="setting-store-domain" placeholder="e.g. your-store.myshopify.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+          <span class="text-[11px] text-slate-400">Your .myshopify.com store address</span>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Shopify Admin API Access Token</label>
+          <input type="password" id="setting-store-token" placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+          <div class="mt-1 flex items-center justify-between text-[11px]">
+            <a href="https://shopify.dev/docs/apps/getting-started/develop-apps" target="_blank" class="text-blue-600 hover:underline">How to get Admin API Token?</a>
+            <button type="button" onclick="testShopifyConnection()" class="text-xs font-bold text-indigo-600 hover:underline">Test Connection</button>
+          </div>
+          <div id="connection-test-result" class="mt-2 text-[11px] hidden"></div>
+        </div>
+
+        <div class="border-t border-slate-100 pt-3">
+          <label class="block font-semibold text-slate-700 mb-1">Google Gemini API Key (Optional)</label>
+          <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+          <span class="text-[11px] text-slate-400">Enables high-converting AI copywriting. <a href="https://aistudio.google.com/" target="_blank" class="text-blue-600 underline">Get free key</a></span>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button onclick="saveSettings()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
+    Smart Gadget AI Importer &bull; Powered by Google Gemini &amp; Shopify Admin API
+  </footer>
+
+  <!-- Frontend Logic -->
+  <script>
+    let currentRawData = {
+      title: "",
+      description: "",
+      price: 15.0,
+      images: []
+    };
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchStatus();
+      loadTrendingGadgets();
+    });
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch("/api/status");
+        const data = await res.json();
+        
+        const badge = document.getElementById("shopify-status-badge");
+        const badgeText = document.getElementById("shopify-status-text");
+
+        if (data.shopify_connected) {
+          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Connected: ${data.shopify_domain}</span>`;
+        } else {
+          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>Shopify Not Configured</span>`;
+        }
+
+        if (data.shopify_domain) document.getElementById("setting-store-domain").value = data.shopify_domain;
+        if (data.shopify_token_masked) document.getElementById("setting-store-token").placeholder = data.shopify_token_masked;
+        if (data.gemini_key_masked) document.getElementById("setting-gemini-key").placeholder = data.gemini_key_masked;
+
+      } catch (e) {
+        console.error("Status check failed", e);
+      }
+    }
+
+    async function loadTrendingGadgets() {
+      const container = document.getElementById("trending-gadgets-list");
+      try {
+        const res = await fetch("/api/trending");
+        const data = await res.json();
+        if (data.success && data.gadgets.length > 0) {
+          container.innerHTML = data.gadgets.map(g => `
+            <div class="p-3 border border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-sm transition bg-white flex items-center justify-between gap-3 group">
+              <img src="${g.images[0]}" class="w-14 h-14 rounded-lg object-cover bg-slate-100 flex-shrink-0" alt="${g.name}">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-blue-50 text-blue-700">${g.category}</span>
+                  <span class="text-[10px] text-slate-400">Cost: $${g.supplier_cost.toFixed(2)}</span>
+                </div>
+                <h4 class="text-xs font-bold text-slate-800 truncate mt-0.5">${g.name}</h4>
+                <p class="text-[11px] text-slate-500 line-clamp-1">${g.viral_factor}</p>
+              </div>
+              <button onclick='loadGadgetTemplate(${JSON.stringify(g).replace(/'/g, "&#39;")})' class="px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition flex-shrink-0">
+                Select
+              </button>
+            </div>
+          `).join('');
+
+          // Select first gadget by default
+          loadGadgetTemplate(data.gadgets[0]);
+        }
+      } catch (e) {
+        container.innerHTML = `<div class="text-xs text-red-500 p-2">Failed to load trending items.</div>`;
+      }
+    }
+
+    function loadGadgetTemplate(gadget) {
+      currentRawData = {
+        title: gadget.raw_title,
+        description: gadget.raw_description,
+        price: gadget.supplier_cost,
+        images: gadget.images
+      };
+
+      document.getElementById("supplier-cost-input").value = gadget.supplier_cost.toFixed(2);
+      document.getElementById("manual-title-input").value = gadget.raw_title;
+      document.getElementById("manual-desc-input").value = gadget.raw_description;
+
+      renderImages(gadget.images);
+      recalculatePricing();
+
+      // Automatically run AI generation for this template
+      runAIEnhancement();
+    }
+
+    function switchSourceTab(tab) {
+      ['trending', 'url', 'custom'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}-btn`).className = "flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5";
+      });
+
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}-btn`).className = "flex-1 pb-3 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition flex items-center justify-center gap-1.5";
+    }
+
+    async function extractFromUrl() {
+      const url = document.getElementById("extract-url-input").value.trim();
+      if (!url) return alert("Please enter a product URL");
+
+      const btn = document.getElementById("extract-btn");
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching...`;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/extract", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentRawData = {
+            title: data.title,
+            description: data.description,
+            price: data.supplier_price || 15.0,
+            images: data.images || []
+          };
+
+          document.getElementById("supplier-cost-input").value = currentRawData.price.toFixed(2);
+          document.getElementById("manual-title-input").value = data.title;
+          document.getElementById("manual-desc-input").value = data.description;
+          renderImages(currentRawData.images);
+          recalculatePricing();
+          runAIEnhancement();
+        } else {
+          alert(data.error || "Could not extract product details.");
+        }
+      } catch (e) {
+        alert("Extraction failed: " + e.message);
+      } finally {
+        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Fetch`;
+        btn.disabled = false;
+      }
+    }
+
+    function recalculatePricing() {
+      const cost = parseFloat(document.getElementById("supplier-cost-input").value) || 15.0;
+      const mult = parseFloat(document.getElementById("price-multiplier-select").value) || 2.5;
+
+      const rawTarget = cost * mult;
+      const retail = Math.max(19.99, Math.round(rawTarget) - 0.01).toFixed(2);
+      const compare = (parseFloat(retail) * 1.5).toFixed(2);
+      const profit = (parseFloat(retail) - cost).toFixed(2);
+
+      document.getElementById("preview-price-display").innerText = `$${retail}`;
+      document.getElementById("preview-compare-display").innerText = `$${compare}`;
+      document.getElementById("preview-profit-display").innerText = `+$${profit}`;
+
+      document.getElementById("final-price").value = retail;
+      document.getElementById("final-compare-price").value = compare;
+    }
+
+    function renderImages(imgs) {
+      const container = document.getElementById("image-previews");
+      const input = document.getElementById("final-image-input");
+      if (!imgs || imgs.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400">No images found. Enter URLs below.</span>`;
+        input.value = "";
+        return;
+      }
+
+      container.innerHTML = imgs.map(img => `
+        <div class="relative group">
+          <img src="${img}" class="w-14 h-14 rounded-lg object-cover border border-slate-200">
+        </div>
+      `).join('');
+
+      input.value = imgs.join(", ");
+    }
+
+    async function runAIEnhancement() {
+      const title = document.getElementById("manual-title-input").value || currentRawData.title;
+      const desc = document.getElementById("manual-desc-input").value || currentRawData.description;
+      const cost = parseFloat(document.getElementById("supplier-cost-input").value) || 15.0;
+      const mult = parseFloat(document.getElementById("price-multiplier-select").value) || 2.5;
+
+      const btn = document.getElementById("ai-enhance-btn");
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Writing...`;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/enhance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            raw_title: title,
+            raw_description: desc,
+            supplier_price: cost,
+            price_multiplier: mult
+          })
+        });
+
+        const resp = await res.json();
+        if (resp.success && resp.data) {
+          const d = resp.data;
+          document.getElementById("final-title").value = d.title;
+          document.getElementById("final-price").value = d.price;
+          document.getElementById("final-compare-price").value = d.compare_at_price;
+          document.getElementById("final-tags").value = d.tags;
+          document.getElementById("final-body-html").value = d.body_html;
+          document.getElementById("desc-preview-container").innerHTML = d.body_html;
+        }
+      } catch (e) {
+        alert("AI Generation failed: " + e.message);
+      } finally {
+        btn.innerHTML = `<i class="fa-solid fa-sparkles"></i> <span>Generate with AI</span>`;
+        btn.disabled = false;
+      }
+    }
+
+    function toggleDescTab(tab) {
+      const preview = document.getElementById("desc-preview-container");
+      const code = document.getElementById("final-body-html");
+      const btnPreview = document.getElementById("desc-tab-preview");
+      const btnCode = document.getElementById("desc-tab-code");
+
+      if (tab === 'preview') {
+        preview.innerHTML = code.value;
+        preview.classList.remove('hidden');
+        code.classList.add('hidden');
+        btnPreview.className = "px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700";
+        btnCode.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-800";
+      } else {
+        code.classList.remove('hidden');
+        preview.classList.add('hidden');
+        btnCode.className = "px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700";
+        btnPreview.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-800";
+      }
+    }
+
+    async function pushToShopify() {
+      const title = document.getElementById("final-title").value.trim();
+      const price = document.getElementById("final-price").value.trim();
+      const comparePrice = document.getElementById("final-compare-price").value.trim();
+      const tags = document.getElementById("final-tags").value.trim();
+      const bodyHtml = document.getElementById("final-body-html").value || document.getElementById("desc-preview-container").innerHTML;
+      const status = document.getElementById("import-status-select").value;
+      const rawImgs = document.getElementById("final-image-input").value;
+      const images = rawImgs ? rawImgs.split(",").map(i => i.trim()).filter(Boolean) : [];
+
+      if (!title) return alert("Please specify a product title");
+
+      const btn = document.getElementById("push-shopify-btn");
+      const resultBox = document.getElementById("import-result-box");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Pushing to Shopify...`;
+      resultBox.classList.add("hidden");
+
+      const payload = {
+        product: {
+          title: title,
+          body_html: bodyHtml,
+          price: price,
+          compare_at_price: comparePrice,
+          tags: tags,
+          status: status,
+          images: images
+        }
+      };
+
+      try {
+        const res = await fetch("/api/shopify/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        resultBox.classList.remove("hidden");
+        if (data.success) {
+          resultBox.className = "p-4 rounded-xl text-xs bg-emerald-500/20 border border-emerald-400/30 text-emerald-100";
+          resultBox.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-bold text-sm text-emerald-300">✅ Successfully Imported to Shopify!</span>
+                <p class="mt-1 text-emerald-100">Product created as <strong>${data.status.toUpperCase()}</strong>.</p>
+              </div>
+              <a href="${data.admin_url}" target="_blank" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg shadow inline-flex items-center gap-1.5 transition">
+                <span>View in Shopify Admin</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+          `;
+        } else {
+          resultBox.className = "p-4 rounded-xl text-xs bg-rose-500/20 border border-rose-400/30 text-rose-100";
+          resultBox.innerHTML = `
+            <span class="font-bold text-rose-300">❌ Import Failed</span>
+            <p class="mt-1">${data.error || "Could not push product. Check your Shopify credentials."}</p>
+          `;
+        }
+      } catch (e) {
+        resultBox.classList.remove("hidden");
+        resultBox.className = "p-4 rounded-xl text-xs bg-rose-500/20 border border-rose-400/30 text-rose-100";
+        resultBox.innerHTML = `<span>Error: ${e.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-brands fa-shopify text-lg text-emerald-600"></i><span>Push Product to Shopify Store</span>`;
+      }
+    }
+
+    // Modal & Settings handlers
+    function openSettingsModal() {
+      document.getElementById("settings-modal").classList.remove("hidden");
+    }
+    function closeSettingsModal() {
+      document.getElementById("settings-modal").classList.add("hidden");
+      document.getElementById("connection-test-result").classList.add("hidden");
+    }
+
+    async function testShopifyConnection() {
+      const domain = document.getElementById("setting-store-domain").value.trim();
+      const token = document.getElementById("setting-store-token").value.trim();
+      const resultDiv = document.getElementById("connection-test-result");
+
+      resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-slate-100 text-slate-600 block";
+      resultDiv.innerText = "Testing connection...";
+
+      try {
+        const res = await fetch("/api/shopify/test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ domain, token })
+        });
+        const data = await res.json();
+        if (data.success) {
+          resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 block";
+          resultDiv.innerText = `✅ ${data.message}`;
+        } else {
+          resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-rose-50 text-rose-700 border border-rose-200 block";
+          resultDiv.innerText = `❌ ${data.error}`;
+        }
+      } catch (e) {
+        resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-rose-50 text-rose-700 border border-rose-200 block";
+        resultDiv.innerText = `❌ Test failed: ${e.message}`;
+      }
+    }
+
+    async function saveSettings() {
+      const domain = document.getElementById("setting-store-domain").value.trim();
+      const token = document.getElementById("setting-store-token").value.trim();
+      const gemini = document.getElementById("setting-gemini-key").value.trim();
+
+      await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopify_domain: domain,
+          shopify_token: token,
+          gemini_key: gemini
+        })
+      });
+
+      closeSettingsModal();
+      fetchStatus();
+    }
+  </script>
+</body>
+</html>
+
