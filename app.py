@@ -384,6 +384,34 @@ def supplier_history():
 
 
 if __name__ == "__main__":
+    import socket
+    import time
+    import webbrowser
+    import threading
+
+    def is_port_in_use(port_num: int) -> bool:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('127.0.0.1', port_num)) == 0
+
     port = 5000
-    print(f"Starting 24/7 Shopify AI Management System on http://localhost:{port}")
-    app.run(host="127.0.0.1", port=port, debug=True)
+    if is_port_in_use(port):
+        port = 5050
+        while is_port_in_use(port):
+            port += 1
+
+    app_url = f"http://127.0.0.1:{port}"
+    print(f"\n========================================================")
+    print(f"  24/7 Smart Gadget AI Store Manager is Live!")
+    print(f"  Dashboard: {app_url}")
+    print(f"========================================================\n")
+
+    def auto_open_browser():
+        time.sleep(1.2)
+        try:
+            webbrowser.open(app_url)
+        except Exception:
+            pass
+
+    threading.Thread(target=auto_open_browser, daemon=True).start()
+    app.run(host="0.0.0.0", port=port, debug=False)
+

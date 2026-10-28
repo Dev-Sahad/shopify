@@ -1,21 +1,24 @@
 @echo off
+title 24/7 Smart Gadget AI Store Manager
 echo ========================================================
 echo    24/7 Smart Gadget AI Store Manager for Shopify
 echo ========================================================
 echo.
-echo Starting server and background bot daemon...
-echo Open http://localhost:5000 in your browser.
+echo Starting server and background daemon...
+echo Your browser will open automatically once the dashboard is ready.
 echo.
 
 cd /d "%~dp0"
 
 where python >nul 2>nul
 if %ERRORLEVEL% equ 0 (
-    start http://localhost:5000
     python app.py
 ) else (
-    start http://localhost:5000
     "C:\Users\sahad\AppData\Local\Python\bin\python.exe" app.py
 )
 
-pause
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo [ERROR] Application encountered an issue.
+    pause
+)
