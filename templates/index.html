@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Gadget AI Dropshipping Assistant</title>
+  <title>24/7 Smart Gadget AI Store Manager & Auto-Pilot</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,6 +13,14 @@
         extend: {
           colors: {
             brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            },
+            tech: {
               50: '#eff6ff',
               500: '#3b82f6',
               600: '#2563eb',
@@ -24,648 +32,1503 @@
       }
     }
   </script>
+  <style>
+    .terminal-scroll::-webkit-scrollbar { width: 6px; }
+    .terminal-scroll::-webkit-scrollbar-track { background: #0f172a; }
+    .terminal-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    .card-hover { transition: all 0.2s ease-in-out; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08); }
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
 
-  <!-- Navigation Bar -->
+  <!-- Top Navigation & Live 24/7 Status Header -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <i class="fa-solid fa-microchip text-lg"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-tech-600 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-tech-500/20">
+          <i class="fa-solid fa-robot text-lg"></i>
         </div>
         <div>
-          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">GadgetBot AI</span>
-          <span class="text-xs ml-2 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">Shopify Dropship Helper</span>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-black tracking-tight text-slate-900">GadgetBot <span class="text-tech-600">24/7</span></span>
+            <span id="bot-live-badge" class="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+              <span id="bot-pulse-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span id="bot-live-text">Bot Standby</span>
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500">Autonomous Winning Gadget Hunter &amp; Full Store Manager</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <!-- Shopify Status Indicator -->
-        <div id="shopify-status-badge" class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span id="shopify-status-text">Shopify Not Connected</span>
+      <!-- Quick Action Controls in Header -->
+      <div class="flex items-center space-x-3">
+        <!-- Next Run Countdown -->
+        <div class="hidden md:flex flex-col text-right">
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Next Auto-Scan</span>
+          <span id="bot-next-run-text" class="text-xs font-semibold text-slate-700">Scheduled</span>
         </div>
 
-        <button onclick="openSettingsModal()" class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
-          <i class="fa-solid fa-gear text-slate-500"></i>
-          <span>Settings</span>
+        <!-- 24/7 Start / Pause Toggle -->
+        <button id="header-bot-toggle-btn" onclick="toggleBotState()" class="px-3.5 py-1.5 text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+          <i class="fa-solid fa-play"></i>
+          <span>Start 24/7 Bot</span>
+        </button>
+
+        <!-- Instant Manual Cycle -->
+        <button onclick="triggerBotCycleNow()" title="Run full hunt, AI copy &amp; upload cycle immediately" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-bolt text-amber-500"></i>
+          <span class="hidden sm:inline">Run Cycle Now</span>
+        </button>
+
+        <!-- Shopify Store Status -->
+        <div id="shopify-status-badge" class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="shopify-status-text">Shopify Pending</span>
+        </div>
+
+        <!-- Settings Button -->
+        <button onclick="openSettingsModal()" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg border border-slate-200 transition">
+          <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
-    
-    <!-- Left Column: Product Selection & Sourcing (5 cols) -->
-    <div class="lg:col-span-5 space-y-6">
+  <!-- Executive KPI Metrics Overview -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       
-      <!-- Source Selector Card -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
-            Select or Source Gadget
+      <!-- Card 1: 24/7 Bot Status -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">24/7 Auto-Pilot</span>
+          <div class="text-lg font-bold text-slate-900 mt-0.5" id="metric-bot-status">Paused</div>
+          <div class="text-[11px] text-slate-500 mt-0.5" id="metric-bot-mode">Mode: Review (Draft)</div>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+      </div>
+
+      <!-- Card 2: Store Products -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Store Products</span>
+          <div class="text-lg font-bold text-slate-900 mt-0.5" id="metric-products-count">--</div>
+          <div class="text-[11px] text-slate-500 mt-0.5" id="metric-products-breakdown">Active: -- | Draft: --</div>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-box-open"></i>
+        </div>
+      </div>
+
+      <!-- Card 3: Orders & Fulfillment -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pending Orders</span>
+          <div class="text-lg font-bold text-slate-900 mt-0.5" id="metric-orders-unfulfilled">--</div>
+          <div class="text-[11px] text-slate-500 mt-0.5" id="metric-revenue">Revenue: $0.00</div>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-truck-fast"></i>
+        </div>
+      </div>
+
+      <!-- Card 4: Daily Life Gadgets Catalog -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Winning Catalog</span>
+          <div class="text-lg font-bold text-slate-900 mt-0.5" id="metric-catalog-count">12 Winners</div>
+          <div class="text-[11px] text-emerald-600 font-semibold mt-0.5">🔥 High Virality (89-97)</div>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-fire text-amber-500"></i>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Navigation Tabs -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
+    <div class="flex border-b border-slate-200 space-x-1 sm:space-x-4 overflow-x-auto">
+      <button onclick="switchMainTab('tab-bot')" id="nav-tab-bot" class="tab-btn px-4 py-3 text-xs sm:text-sm font-bold text-tech-600 border-b-2 border-tech-600 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-robot"></i> 24/7 Bot Control Room
+      </button>
+      <button onclick="switchMainTab('tab-hunter')" id="nav-tab-hunter" class="tab-btn px-4 py-3 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-magnifying-glass-chart"></i> Winning Smart Gadgets
+      </button>
+      <button onclick="switchMainTab('tab-suppliers')" id="nav-tab-suppliers" class="tab-btn px-4 py-3 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-handshake"></i> Supplier Hub &amp; Outreach
+      </button>
+      <button onclick="switchMainTab('tab-store')" id="nav-tab-store" class="tab-btn px-4 py-3 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-store"></i> Shopify Store Manager
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB 1: 24/7 Bot Control Room -->
+  <main id="tab-bot" class="main-tab-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Bot Settings & Operational Controls (4 cols) -->
+      <div class="lg:col-span-4 space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-5">
+          <h2 class="text-sm font-bold text-slate-900 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-tech-600"></i> Auto-Pilot Configuration
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-tech-50 text-tech-700 font-bold">24/7 Engine</span>
           </h2>
-        </div>
 
-        <!-- Tabs -->
-        <div class="flex border-b border-slate-200 mb-5">
-          <button id="tab-trending-btn" onclick="switchSourceTab('trending')" class="flex-1 pb-3 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-fire text-amber-500"></i> Viral Winners
-          </button>
-          <button id="tab-url-btn" onclick="switchSourceTab('url')" class="flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-link"></i> Web / Supplier URL
-          </button>
-          <button id="tab-custom-btn" onclick="switchSourceTab('custom')" class="flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-pen-to-square"></i> Manual Input
-          </button>
-        </div>
-
-        <!-- Tab 1: Viral Winners Gallery -->
-        <div id="tab-trending" class="space-y-3">
-          <p class="text-xs text-slate-500 mb-2">Pre-vetted smart gadgets with high viral potential on TikTok & Reels:</p>
-          <div id="trending-gadgets-list" class="space-y-2.5 max-h-[480px] overflow-y-auto pr-1">
-            <!-- Loaded dynamically via JS -->
-            <div class="text-center py-8 text-xs text-slate-400">Loading trending winners...</div>
-          </div>
-        </div>
-
-        <!-- Tab 2: URL Scraper -->
-        <div id="tab-url" class="hidden space-y-4">
+          <!-- Automation Mode -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Product Link (AliExpress, CJ Dropshipping, Amazon, etc.)</label>
-            <div class="flex gap-2">
-              <input type="url" id="extract-url-input" placeholder="https://www.aliexpress.com/item/..." class="flex-1 text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button onclick="extractFromUrl()" id="extract-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Fetch
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Publishing Strategy</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setBotMode('review')" id="btn-mode-review" class="px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-tech-50 border-tech-500 text-tech-700">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
+                <span>Review Mode</span>
+                <span class="text-[10px] text-slate-500 font-normal">Push as Draft</span>
+              </button>
+              <button type="button" onclick="setBotMode('autonomous')" id="btn-mode-auto" class="px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-bolt text-sm text-amber-500"></i>
+                <span>Full Auto</span>
+                <span class="text-[10px] text-slate-500 font-normal">Instant Live</span>
               </button>
             </div>
-            <p class="text-[11px] text-slate-400 mt-1.5">Bot will extract title, specifications, and images automatically.</p>
+            <p class="text-[11px] text-slate-400 mt-1.5">"Full Auto" publishes directly active to store. "Review Mode" holds products as drafts for your 1-click approval.</p>
           </div>
-        </div>
 
-        <!-- Tab 3: Manual Input -->
-        <div id="tab-custom" class="hidden space-y-3">
+          <!-- Execution Interval -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Raw Gadget Name / Supplier Title</label>
-            <input type="text" id="manual-title-input" placeholder="e.g. 2024 Levitating Magnetic Moon Lamp 3D Touch" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Raw Features &amp; Specifications</label>
-            <textarea id="manual-desc-input" rows="4" placeholder="Enter supplier features, specs, battery size, etc." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Pricing Formula Card -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
-          <i class="fa-solid fa-calculator text-blue-600"></i> Profit Margin &amp; Pricing Formula
-        </h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-[11px] font-medium text-slate-500 mb-1">Supplier Cost ($)</label>
-            <input type="number" id="supplier-cost-input" value="15.00" step="0.50" onchange="recalculatePricing()" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[11px] font-medium text-slate-500 mb-1">Target Markup Multiplier</label>
-            <select id="price-multiplier-select" onchange="recalculatePricing()" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg bg-white">
-              <option value="2.0">2.0x Cost (Fast volume)</option>
-              <option value="2.5" selected>2.5x Cost (Recommended)</option>
-              <option value="3.0">3.0x Cost (High profit)</option>
-              <option value="3.5">3.5x Cost (Premium brand)</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Hunting &amp; Upload Frequency</label>
+            <select id="bot-interval-select" onchange="updateBotInterval(this.value)" class="w-full text-xs px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-tech-500 bg-white">
+              <option value="30">Every 30 Minutes (Aggressive)</option>
+              <option value="60">Every 1 Hour (Fast Scaling)</option>
+              <option value="180">Every 3 Hours</option>
+              <option value="360" selected>Every 6 Hours (Recommended)</option>
+              <option value="720">Every 12 Hours (Twice Daily)</option>
+              <option value="1440">Every 24 Hours (Once Daily)</option>
             </select>
+            <p class="text-[11px] text-slate-400 mt-1">Bot checks trends, prepares copy, checks Shopify orders, and contacts suppliers at this interval.</p>
+          </div>
+
+          <!-- 24/7 Action Buttons -->
+          <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+            <button onclick="toggleBotState()" id="panel-bot-toggle-btn" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-play"></i> Start 24/7 Autonomous Bot
+            </button>
+            <button onclick="triggerBotCycleNow()" class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-500"></i> Trigger Immediate Cycle Now
+            </button>
           </div>
         </div>
 
-        <div class="mt-4 p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
-          <div>
-            <span class="text-slate-500 block text-[11px]">Est. Retail Price:</span>
-            <span id="preview-price-display" class="text-base font-extrabold text-blue-700">$39.99</span>
-          </div>
-          <div>
-            <span class="text-slate-500 block text-[11px]">Compare-At (Anchor):</span>
-            <span id="preview-compare-display" class="text-xs font-semibold text-slate-400 line-through">$59.99</span>
-          </div>
-          <div>
-            <span class="text-slate-500 block text-[11px]">Net Profit / Sale:</span>
-            <span id="preview-profit-display" class="text-xs font-bold text-emerald-600">+$24.99</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Right Column: AI Enhancement & Shopify Exporter (7 cols) -->
-    <div class="lg:col-span-7 space-y-6">
-      
-      <!-- AI Generator / Editor Card -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
-            AI Content Optimization
-          </h2>
-          <button onclick="runAIEnhancement()" id="ai-enhance-btn" class="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>Generate with AI</span>
-          </button>
-        </div>
-
-        <!-- Editable Title -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Optimized Shopify Product Title</label>
-          <input type="text" id="final-title" placeholder="Click 'Generate with AI' or select a winning gadget..." class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <!-- Pricing Fields in Editor -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Selling Price ($)</label>
-            <input type="text" id="final-price" value="39.99" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Compare-at Price ($)</label>
-            <input type="text" id="final-compare-price" value="59.99" class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg">
-          </div>
-        </div>
-
-        <!-- Product Tags -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Shopify Product Tags</label>
-          <input type="text" id="final-tags" value="Smart Gadgets, Trending, TikTok Made Me Buy It, Best Sellers" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg">
-        </div>
-
-        <!-- Image URLs list -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Product Images (URLs)</label>
-          <div id="image-previews" class="flex flex-wrap gap-2 mb-2 min-h-[50px] p-2 bg-slate-50 border border-dashed border-slate-200 rounded-lg items-center">
-            <span class="text-xs text-slate-400">Images will preview here</span>
-          </div>
-          <input type="text" id="final-image-input" placeholder="Comma separated image URLs" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg">
-        </div>
-
-        <!-- Description View Switcher (Rich HTML vs Preview) -->
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-semibold text-slate-700">Product Description (HTML)</label>
-            <div class="flex space-x-2 text-[11px]">
-              <button type="button" onclick="toggleDescTab('preview')" id="desc-tab-preview" class="px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700">Visual Preview</button>
-              <button type="button" onclick="toggleDescTab('code')" id="desc-tab-code" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-800">HTML Code</button>
+        <!-- Automation Pipeline Steps -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">24/7 Bot Pipeline</h3>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-tech-100 text-tech-700 text-xs font-bold flex items-center justify-center shrink-0">1</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Trend Hunter &amp; Virality Scoring</h4>
+                <p class="text-[11px] text-slate-500">Discovers high-margin, viral smart gadgets with 85+ score.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-tech-100 text-tech-700 text-xs font-bold flex items-center justify-center shrink-0">2</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">AI Copywriter &amp; SEO Engine</h4>
+                <p class="text-[11px] text-slate-500">Rewrites supplier spam into high-converting copy &amp; 30-day guarantee.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-tech-100 text-tech-700 text-xs font-bold flex items-center justify-center shrink-0">3</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Shopify Auto-Catalog Sync</h4>
+                <p class="text-[11px] text-slate-500">Pushes images, pricing, SKUs, and tags to your Shopify catalog.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-tech-100 text-tech-700 text-xs font-bold flex items-center justify-center shrink-0">4</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Supplier Sourcing &amp; Inquiries</h4>
+                <p class="text-[11px] text-slate-500">Generates blind dropship negotiations in English and Chinese.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-tech-100 text-tech-700 text-xs font-bold flex items-center justify-center shrink-0">5</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Order Polling &amp; Dropship Slips</h4>
+                <p class="text-[11px] text-slate-500">Monitors incoming customer orders and generates supplier dispatch.</p>
+              </div>
             </div>
           </div>
-          <div id="desc-preview-container" class="border border-slate-200 rounded-lg p-4 max-h-72 overflow-y-auto bg-white text-xs">
-            <p class="text-slate-400 italic">Product description preview will appear here...</p>
-          </div>
-          <textarea id="final-body-html" rows="8" class="hidden w-full text-xs font-mono p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
-
       </div>
 
-      <!-- Step 3: Shopify Exporter Card -->
-      <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-lg space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-base font-bold flex items-center gap-2">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-white text-blue-900 text-xs font-bold">3</span>
-            Import Directly into Shopify
-          </h2>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-blue-200">Save as:</span>
-            <select id="import-status-select" class="bg-blue-800/80 text-white font-medium border border-blue-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
-              <option value="draft" selected>Draft (Review First)</option>
-              <option value="active">Active (Live Now)</option>
-            </select>
+      <!-- Right Column: Live Terminal Activity Log & Audit Feed (8 cols) -->
+      <div class="lg:col-span-8 flex flex-col space-y-4">
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-5 flex flex-col flex-1 min-h-[500px]">
+          <!-- Terminal Header -->
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+              <span class="text-xs font-mono font-bold text-slate-300 ml-2">24/7 Bot Activity &amp; Decision Stream</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <button onclick="fetchBotLogs()" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
+                <i class="fa-solid fa-rotate text-[10px]"></i> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Log Messages Feed -->
+          <div id="bot-terminal-feed" class="terminal-scroll font-mono text-xs text-slate-300 space-y-2 flex-1 overflow-y-auto max-h-[520px] pr-2">
+            <div class="text-slate-500 italic">Connecting to 24/7 Bot event feed...</div>
+          </div>
+
+          <!-- Terminal Footer -->
+          <div class="border-t border-slate-800 pt-3 mt-3 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <div>Status: <span id="terminal-status-text" class="text-emerald-400">Daemon Initialized</span></div>
+            <div id="terminal-last-run-text">Last Cycle: Never</div>
           </div>
         </div>
-
-        <p class="text-xs text-blue-200 leading-relaxed">
-          Pushes the AI-enhanced copy, calculated retail pricing, and high-resolution images directly to your Shopify store via the Admin API.
-        </p>
-
-        <button onclick="pushToShopify()" id="push-shopify-btn" class="w-full py-3.5 bg-white hover:bg-blue-50 text-blue-900 font-extrabold text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2">
-          <i class="fa-brands fa-shopify text-lg text-emerald-600"></i>
-          <span>Push Product to Shopify Store</span>
-        </button>
-
-        <!-- Result Box -->
-        <div id="import-result-box" class="hidden p-4 rounded-xl text-xs"></div>
       </div>
 
     </div>
-
   </main>
 
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-blue-600"></i> Store &amp; AI Settings
-        </h3>
-        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+  <!-- TAB 2: Winning Smart Daily Life Gadgets Hunter -->
+  <main id="tab-hunter" class="main-tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+    
+    <!-- Filter & Sourcing Bar -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+      
+      <!-- Category Chips -->
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0" id="category-filter-chips">
+        <button onclick="filterGadgets('all')" class="cat-chip px-3 py-1.5 text-xs font-bold rounded-lg bg-tech-600 text-white">All Niches</button>
+        <button onclick="filterGadgets('home')" class="cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Smart Home</button>
+        <button onclick="filterGadgets('kitchen')" class="cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Smart Kitchen</button>
+        <button onclick="filterGadgets('desk')" class="cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Tech Desk</button>
+        <button onclick="filterGadgets('cleaning')" class="cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Smart Cleaning</button>
+        <button onclick="filterGadgets('wellness')" class="cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">Wellness</button>
+      </div>
+
+      <!-- Search & Custom Link Sourcing -->
+      <div class="flex items-center gap-2 w-full md:w-auto">
+        <div class="relative flex-1 md:w-64">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+          <input type="text" id="hunter-search-input" onkeyup="filterGadgets()" placeholder="Search gadgets or specs..." class="w-full text-xs pl-8 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tech-500">
+        </div>
+        <button onclick="openExtractModal()" class="px-3.5 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-link"></i> Scrape URL
+        </button>
+      </div>
+    </div>
+
+    <!-- Gadgets Grid -->
+    <div id="gadgets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Dynamically populated via JS -->
+      <div class="col-span-full py-16 text-center text-slate-400">
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-tech-600 mb-2"></i>
+        <p class="text-xs">Loading winning smart gadgets...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB 3: Supplier Hub & B2B Outreach -->
+  <main id="tab-suppliers" class="main-tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Supplier Directory (5 cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-900 flex items-center justify-between mb-4">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-industry text-tech-600"></i> Verified Gadget Suppliers
+            </span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Fast Dispatch</span>
+          </h2>
+          <div id="suppliers-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+            <div class="text-center py-8 text-xs text-slate-400">Loading supplier network...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: B2B Negotiation Generator & History (7 cols) -->
+      <div class="lg:col-span-7 space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-envelope-open-text text-amber-500"></i>
+              B2B Dropship Negotiation Generator
+            </h2>
+            <span class="text-[11px] text-slate-500">English + Chinese</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Target Gadget</label>
+            <select id="inquiry-gadget-select" onchange="generateSupplierInquiryUI(this.value)" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-tech-500 bg-white">
+              <option value="">-- Choose Gadget to Contact Supplier --</option>
+            </select>
+          </div>
+
+          <!-- Generated Messages Preview -->
+          <div id="inquiry-preview-box" class="hidden space-y-4 pt-2">
+            <!-- Tabs: English vs Chinese -->
+            <div class="flex border-b border-slate-200 text-xs font-bold">
+              <button onclick="switchLangTab('en')" id="btn-lang-en" class="pb-2 text-tech-600 border-b-2 border-tech-600 px-3">English Message</button>
+              <button onclick="switchLangTab('zh')" id="btn-lang-zh" class="pb-2 text-slate-500 border-b-2 border-transparent hover:text-slate-700 px-3">Chinese (3x Faster Reply)</button>
+            </div>
+
+            <!-- English Box -->
+            <div id="box-inquiry-en" class="relative">
+              <textarea id="inquiry-text-en" rows="8" readonly class="w-full font-mono text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 leading-relaxed"></textarea>
+              <button onclick="copyToClipboard('inquiry-text-en')" class="absolute top-2 right-2 px-2.5 py-1 text-[11px] font-bold bg-white hover:bg-slate-100 text-slate-700 rounded-md border border-slate-300 shadow-sm transition">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+
+            <!-- Chinese Box -->
+            <div id="box-inquiry-zh" class="hidden relative">
+              <textarea id="inquiry-text-zh" rows="8" readonly class="w-full font-mono text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 leading-relaxed"></textarea>
+              <button onclick="copyToClipboard('inquiry-text-zh')" class="absolute top-2 right-2 px-2.5 py-1 text-[11px] font-bold bg-white hover:bg-slate-100 text-slate-700 rounded-md border border-slate-300 shadow-sm transition">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3">
+              <a id="inquiry-whatsapp-link" href="#" target="_blank" class="flex-1 py-2 text-center text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Open in WhatsApp
+              </a>
+              <button onclick="logSupplierActionComplete()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-300 transition">
+                <i class="fa-solid fa-check"></i> Mark Contacted
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supplier Interaction Log -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Outreach Audit History</h3>
+          <div id="supplier-history-list" class="space-y-2 max-h-[220px] overflow-y-auto font-mono text-xs">
+            <div class="text-slate-400 italic">No supplier inquiries dispatched yet.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- TAB 4: Shopify Store Manager -->
+  <main id="tab-store" class="main-tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+    <div class="space-y-6">
+      
+      <!-- Subtabs: Products vs Orders -->
+      <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex gap-2">
+          <button onclick="switchStoreSubtab('products')" id="subtab-btn-products" class="px-4 py-2 text-xs font-bold rounded-xl bg-tech-600 text-white shadow-sm">
+            <i class="fa-solid fa-tags"></i> Live Products Catalog (<span id="store-products-count-badge">0</span>)
+          </button>
+          <button onclick="switchStoreSubtab('orders')" id="subtab-btn-orders" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+            <i class="fa-solid fa-boxes-packing"></i> Customer Orders (<span id="store-orders-count-badge">0</span>)
+          </button>
+        </div>
+        <button onclick="loadStoreData()" class="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg transition flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate text-xs"></i> Sync Store
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs">
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Shopify Store Domain</label>
-          <input type="text" id="setting-store-domain" placeholder="e.g. your-store.myshopify.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
-          <span class="text-[11px] text-slate-400">Your .myshopify.com store address</span>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Shopify Admin API Access Token</label>
-          <input type="password" id="setting-store-token" placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
-          <div class="mt-1 flex items-center justify-between text-[11px]">
-            <a href="https://shopify.dev/docs/apps/getting-started/develop-apps" target="_blank" class="text-blue-600 hover:underline">How to get Admin API Token?</a>
-            <button type="button" onclick="testShopifyConnection()" class="text-xs font-bold text-indigo-600 hover:underline">Test Connection</button>
-          </div>
-          <div id="connection-test-result" class="mt-2 text-[11px] hidden"></div>
-        </div>
-
-        <div class="border-t border-slate-100 pt-3">
-          <label class="block font-semibold text-slate-700 mb-1">Google Gemini API Key (Optional)</label>
-          <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full px-3 py-2 border border-slate-300 rounded-lg">
-          <span class="text-[11px] text-slate-400">Enables high-converting AI copywriting. <a href="https://aistudio.google.com/" target="_blank" class="text-blue-600 underline">Get free key</a></span>
+      <!-- Subtab 1: Products Table -->
+      <div id="store-subtab-products" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <th class="p-4">Product</th>
+                <th class="p-4">Status</th>
+                <th class="p-4">Retail Price</th>
+                <th class="p-4">Compare-At</th>
+                <th class="p-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="store-products-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="5" class="p-8 text-center text-slate-400">Loading Shopify catalog...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-        <button onclick="closeSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-        <button onclick="saveSettings()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">Save Settings</button>
+      <!-- Subtab 2: Orders Table -->
+      <div id="store-subtab-orders" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <th class="p-4">Order #</th>
+                <th class="p-4">Customer &amp; Country</th>
+                <th class="p-4">Items</th>
+                <th class="p-4">Total</th>
+                <th class="p-4">Fulfillment</th>
+                <th class="p-4 text-right">Dropship Dispatch</th>
+              </tr>
+            </thead>
+            <tbody id="store-orders-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="6" class="p-8 text-center text-slate-400">Loading store orders...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: Product AI Copy & Review Before Import -->
+  <div id="modal-review-import" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-tech-600"></i> AI Product Enhancer &amp; Shopify Import
+        </h3>
+        <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Catchy High-Converting Title</label>
+          <input type="text" id="modal-title" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-tech-500 font-medium">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Retail Price ($)</label>
+            <input type="number" step="0.01" id="modal-price" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Compare-At Price ($)</label>
+            <input type="number" step="0.01" id="modal-compare-price" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Publish Status</label>
+          <select id="modal-status" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white">
+            <option value="draft">Draft (Safe for review in Shopify Admin)</option>
+            <option value="active">Active (Immediately buyable on storefront)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Tags</label>
+          <input type="text" id="modal-tags" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Formatted HTML Description Preview</label>
+          <div id="modal-body-preview" class="border border-slate-200 p-3 rounded-lg max-h-48 overflow-y-auto bg-slate-50 text-[11px]"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeReviewModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button onclick="executeModalImport()" id="btn-modal-push" class="px-5 py-2 text-xs font-bold text-white bg-tech-600 hover:bg-tech-700 rounded-lg shadow transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Push to Shopify Store
+        </button>
       </div>
     </div>
   </div>
 
-  <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
-    Smart Gadget AI Importer &bull; Powered by Google Gemini &amp; Shopify Admin API
-  </footer>
+  <!-- MODAL: Dropship Supplier Slip -->
+  <div id="modal-dispatch-slip" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-box text-amber-500"></i> Supplier Dropship Fulfillment Slip
+        </h3>
+        <button onclick="closeDispatchModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
 
-  <!-- Frontend Logic -->
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-500">Copy this standardized blind dropship format directly to your supplier (via WhatsApp / WeChat or CSV):</p>
+        <div class="relative">
+          <textarea id="dispatch-text-content" rows="8" readonly class="w-full font-mono text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed text-slate-800"></textarea>
+          <button onclick="copyToClipboard('dispatch-text-content')" class="absolute top-2 right-2 px-2.5 py-1 text-[11px] font-bold bg-white hover:bg-slate-100 text-slate-700 rounded border border-slate-300 shadow-sm">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeDispatchModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Scrape Custom Product URL -->
+  <div id="modal-extract-url" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-link text-tech-600"></i> Scrape Supplier or Product URL
+        </h3>
+        <button onclick="closeExtractModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Product Link (AliExpress, CJ, Amazon, etc.)</label>
+          <input type="url" id="extract-modal-url" placeholder="https://www.aliexpress.com/item/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-tech-500">
+        </div>
+        <p class="text-[11px] text-slate-400">The scraper will pull title, specifications, and images automatically.</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeExtractModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button onclick="executeExtract()" id="btn-extract-fetch" class="px-4 py-2 text-xs font-bold text-white bg-tech-600 hover:bg-tech-700 rounded-lg shadow">
+          Fetch &amp; Optimize
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Settings -->
+  <div id="modal-settings" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-gear text-slate-600"></i> API &amp; Store Configuration
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Shopify Store Domain</label>
+          <input type="text" id="setting-domain" placeholder="your-store.myshopify.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Shopify Admin API Token (shpat_...)</label>
+          <input type="password" id="setting-token" placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Google Gemini API Key (Optional)</label>
+          <input type="password" id="setting-gemini" placeholder="AIzaSy..." class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Default Profit Multiplier (e.g. 2.5x)</label>
+          <input type="number" step="0.1" id="setting-multiplier" value="2.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button onclick="testShopifyConnection()" class="px-3 py-2 text-xs font-semibold text-tech-600 bg-tech-50 hover:bg-tech-100 rounded-lg transition">
+          <i class="fa-solid fa-plug"></i> Test Connection
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Close</button>
+          <button onclick="saveSettings()" class="px-4 py-2 text-xs font-bold text-white bg-tech-600 hover:bg-tech-700 rounded-lg shadow">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 bg-slate-900 text-white">
+    <span id="toast-icon"></span>
+    <span id="toast-message">Notification</span>
+  </div>
+
+  <!-- Client-side Application Script -->
   <script>
-    let currentRawData = {
-      title: "",
-      description: "",
-      price: 15.0,
-      images: []
-    };
+    let globalGadgets = [];
+    let globalStoreProducts = [];
+    let activeModalPayload = null;
+    let botRunning = false;
 
-    // Initialize on page load
     document.addEventListener("DOMContentLoaded", () => {
-      fetchStatus();
-      loadTrendingGadgets();
+      fetchSystemStatus();
+      fetchBotStatus();
+      fetchTrendingGadgets();
+      loadSuppliers();
+      setInterval(fetchBotStatus, 8000); // Polling bot state every 8s
+      setInterval(fetchBotLogs, 10000);
     });
 
-    async function fetchStatus() {
-      try {
-        const res = await fetch("/api/status");
-        const data = await res.json();
-        
-        const badge = document.getElementById("shopify-status-badge");
-        const badgeText = document.getElementById("shopify-status-text");
+    // Toast Alert
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-message');
+      const icon = document.getElementById('toast-icon');
 
-        if (data.shopify_connected) {
-          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Connected: ${data.shopify_domain}</span>`;
-        } else {
-          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
-          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>Shopify Not Configured</span>`;
-        }
-
-        if (data.shopify_domain) document.getElementById("setting-store-domain").value = data.shopify_domain;
-        if (data.shopify_token_masked) document.getElementById("setting-store-token").placeholder = data.shopify_token_masked;
-        if (data.gemini_key_masked) document.getElementById("setting-gemini-key").placeholder = data.gemini_key_masked;
-
-      } catch (e) {
-        console.error("Status check failed", e);
+      msg.textContent = message;
+      if (type === 'success') {
+        toast.className = "fixed bottom-6 right-6 z-50 transition-all duration-300 px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 bg-emerald-600 text-white";
+        icon.innerHTML = '<i class="fa-solid fa-check-circle"></i>';
+      } else if (type === 'error') {
+        toast.className = "fixed bottom-6 right-6 z-50 transition-all duration-300 px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 bg-rose-600 text-white";
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      } else {
+        toast.className = "fixed bottom-6 right-6 z-50 transition-all duration-300 px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 bg-slate-900 text-white";
+        icon.innerHTML = '<i class="fa-solid fa-circle-info text-tech-400"></i>';
       }
+
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4000);
     }
 
-    async function loadTrendingGadgets() {
-      const container = document.getElementById("trending-gadgets-list");
-      try {
-        const res = await fetch("/api/trending");
-        const data = await res.json();
-        if (data.success && data.gadgets.length > 0) {
-          container.innerHTML = data.gadgets.map(g => `
-            <div class="p-3 border border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-sm transition bg-white flex items-center justify-between gap-3 group">
-              <img src="${g.images[0]}" class="w-14 h-14 rounded-lg object-cover bg-slate-100 flex-shrink-0" alt="${g.name}">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-blue-50 text-blue-700">${g.category}</span>
-                  <span class="text-[10px] text-slate-400">Cost: $${g.supplier_cost.toFixed(2)}</span>
-                </div>
-                <h4 class="text-xs font-bold text-slate-800 truncate mt-0.5">${g.name}</h4>
-                <p class="text-[11px] text-slate-500 line-clamp-1">${g.viral_factor}</p>
-              </div>
-              <button onclick='loadGadgetTemplate(${JSON.stringify(g).replace(/'/g, "&#39;")})' class="px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition flex-shrink-0">
-                Select
-              </button>
-            </div>
-          `).join('');
+    // Main Tab Switching
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.main-tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
 
-          // Select first gadget by default
-          loadGadgetTemplate(data.gadgets[0]);
-        }
-      } catch (e) {
-        container.innerHTML = `<div class="text-xs text-red-500 p-2">Failed to load trending items.</div>`;
-      }
-    }
-
-    function loadGadgetTemplate(gadget) {
-      currentRawData = {
-        title: gadget.raw_title,
-        description: gadget.raw_description,
-        price: gadget.supplier_cost,
-        images: gadget.images
-      };
-
-      document.getElementById("supplier-cost-input").value = gadget.supplier_cost.toFixed(2);
-      document.getElementById("manual-title-input").value = gadget.raw_title;
-      document.getElementById("manual-desc-input").value = gadget.raw_description;
-
-      renderImages(gadget.images);
-      recalculatePricing();
-
-      // Automatically run AI generation for this template
-      runAIEnhancement();
-    }
-
-    function switchSourceTab(tab) {
-      ['trending', 'url', 'custom'].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}-btn`).className = "flex-1 pb-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-700 transition flex items-center justify-center gap-1.5";
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-tech-600', 'border-tech-600');
+        btn.classList.add('text-slate-500', 'border-transparent');
       });
 
-      document.getElementById(`tab-${tab}`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}-btn`).className = "flex-1 pb-3 text-xs font-bold text-blue-600 border-b-2 border-blue-600 transition flex items-center justify-center gap-1.5";
-    }
+      const navBtn = document.getElementById('nav-' + tabId);
+      if (navBtn) {
+        navBtn.classList.add('text-tech-600', 'border-tech-600');
+        navBtn.classList.remove('text-slate-500', 'border-transparent');
+      }
 
-    async function extractFromUrl() {
-      const url = document.getElementById("extract-url-input").value.trim();
-      if (!url) return alert("Please enter a product URL");
-
-      const btn = document.getElementById("extract-btn");
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching...`;
-      btn.disabled = true;
-
-      try {
-        const res = await fetch("/api/extract", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url })
-        });
-        const data = await res.json();
-        if (data.success) {
-          currentRawData = {
-            title: data.title,
-            description: data.description,
-            price: data.supplier_price || 15.0,
-            images: data.images || []
-          };
-
-          document.getElementById("supplier-cost-input").value = currentRawData.price.toFixed(2);
-          document.getElementById("manual-title-input").value = data.title;
-          document.getElementById("manual-desc-input").value = data.description;
-          renderImages(currentRawData.images);
-          recalculatePricing();
-          runAIEnhancement();
-        } else {
-          alert(data.error || "Could not extract product details.");
-        }
-      } catch (e) {
-        alert("Extraction failed: " + e.message);
-      } finally {
-        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Fetch`;
-        btn.disabled = false;
+      if (tabId === 'tab-store') {
+        loadStoreData();
       }
     }
 
-    function recalculatePricing() {
-      const cost = parseFloat(document.getElementById("supplier-cost-input").value) || 15.0;
-      const mult = parseFloat(document.getElementById("price-multiplier-select").value) || 2.5;
+    // System Status & Credentials
+    async function fetchSystemStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        
+        const badge = document.getElementById('shopify-status-badge');
+        const badgeText = document.getElementById('shopify-status-text');
+        
+        if (data.shopify_connected) {
+          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badgeText.textContent = data.shopify_domain.split('.')[0];
+        } else {
+          badge.className = "flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
+          badgeText.textContent = "Shopify Pending";
+        }
 
-      const rawTarget = cost * mult;
-      const retail = Math.max(19.99, Math.round(rawTarget) - 0.01).toFixed(2);
-      const compare = (parseFloat(retail) * 1.5).toFixed(2);
-      const profit = (parseFloat(retail) - cost).toFixed(2);
+        if (document.getElementById('setting-domain')) {
+          document.getElementById('setting-domain').value = data.shopify_domain || '';
+          document.getElementById('setting-multiplier').value = data.price_multiplier || 2.5;
+        }
 
-      document.getElementById("preview-price-display").innerText = `$${retail}`;
-      document.getElementById("preview-compare-display").innerText = `$${compare}`;
-      document.getElementById("preview-profit-display").innerText = `+$${profit}`;
-
-      document.getElementById("final-price").value = retail;
-      document.getElementById("final-compare-price").value = compare;
+        // Fetch store metrics if connected
+        if (data.shopify_connected) {
+          fetchStoreMetrics();
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    function renderImages(imgs) {
-      const container = document.getElementById("image-previews");
-      const input = document.getElementById("final-image-input");
-      if (!imgs || imgs.length === 0) {
-        container.innerHTML = `<span class="text-xs text-slate-400">No images found. Enter URLs below.</span>`;
-        input.value = "";
+    // 24/7 Bot State & Polling
+    async function fetchBotStatus() {
+      try {
+        const res = await fetch('/api/bot/status');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const bot = data.bot;
+        botRunning = bot.running;
+
+        // Header controls & badges
+        const liveBadge = document.getElementById('bot-live-badge');
+        const liveText = document.getElementById('bot-live-text');
+        const pulseDot = document.getElementById('bot-pulse-dot');
+        const headerBtn = document.getElementById('header-bot-toggle-btn');
+        const panelBtn = document.getElementById('panel-bot-toggle-btn');
+
+        if (bot.running) {
+          liveBadge.className = "flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+          liveText.textContent = "24/7 Bot Active";
+          pulseDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-ping";
+          headerBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white";
+          headerBtn.innerHTML = '<i class="fa-solid fa-pause"></i><span>Pause 24/7 Bot</span>';
+          panelBtn.className = "w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow transition flex items-center justify-center gap-2";
+          panelBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause 24/7 Autonomous Bot';
+          document.getElementById('metric-bot-status').textContent = "Active (24/7)";
+          document.getElementById('metric-bot-status').className = "text-lg font-bold text-emerald-600 mt-0.5";
+        } else {
+          liveBadge.className = "flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200";
+          liveText.textContent = "Bot Standby";
+          pulseDot.className = "w-2 h-2 rounded-full bg-slate-400";
+          headerBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white";
+          headerBtn.innerHTML = '<i class="fa-solid fa-play"></i><span>Start 24/7 Bot</span>';
+          panelBtn.className = "w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2";
+          panelBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start 24/7 Autonomous Bot';
+          document.getElementById('metric-bot-status').textContent = "Paused";
+          document.getElementById('metric-bot-status').className = "text-lg font-bold text-slate-900 mt-0.5";
+        }
+
+        // Mode
+        document.getElementById('metric-bot-mode').textContent = `Mode: ${bot.mode === 'autonomous' ? 'Full Auto (Live)' : 'Review (Draft)'}`;
+        setBotModeUI(bot.mode);
+
+        // Next run
+        if (bot.next_run) {
+          const nextDate = new Date(bot.next_run);
+          document.getElementById('bot-next-run-text').textContent = nextDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        if (bot.last_run) {
+          const lastDate = new Date(bot.last_run);
+          document.getElementById('terminal-last-run-text').textContent = `Last Cycle: ${lastDate.toLocaleTimeString()}`;
+        }
+
+        // Interval
+        if (document.getElementById('bot-interval-select')) {
+          document.getElementById('bot-interval-select').value = String(bot.interval_minutes);
+        }
+
+        // Update logs if needed
+        renderLogs(bot.recent_logs);
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function toggleBotState() {
+      const endpoint = botRunning ? '/api/bot/stop' : '/api/bot/start';
+      try {
+        const res = await fetch(endpoint, { method: 'POST' });
+        const data = await res.json();
+        showToast(data.message, data.success ? 'success' : 'error');
+        fetchBotStatus();
+      } catch (err) {
+        showToast("Error updating bot state", "error");
+      }
+    }
+
+    async function triggerBotCycleNow() {
+      showToast("Triggering instant cycle...", "info");
+      try {
+        const res = await fetch('/api/bot/run-now', { method: 'POST' });
+        const data = await res.json();
+        showToast(data.message, "success");
+        setTimeout(fetchBotStatus, 1500);
+      } catch (err) {
+        showToast("Error triggering cycle", "error");
+      }
+    }
+
+    function setBotModeUI(mode) {
+      const btnReview = document.getElementById('btn-mode-review');
+      const btnAuto = document.getElementById('btn-mode-auto');
+      if (mode === 'autonomous') {
+        btnAuto.className = "px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-amber-50 border-amber-500 text-amber-800";
+        btnReview.className = "px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+      } else {
+        btnReview.className = "px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-tech-50 border-tech-500 text-tech-700";
+        btnAuto.className = "px-3 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+      }
+    }
+
+    async function setBotMode(mode) {
+      setBotModeUI(mode);
+      try {
+        const res = await fetch('/api/bot/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode })
+        });
+        const data = await res.json();
+        showToast(`Bot mode set to ${mode.toUpperCase()}`, "success");
+        fetchBotStatus();
+      } catch (err) {
+        showToast("Failed to update bot mode", "error");
+      }
+    }
+
+    async function updateBotInterval(val) {
+      try {
+        const res = await fetch('/api/bot/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ interval_minutes: parseInt(val) })
+        });
+        const data = await res.json();
+        showToast("Scan frequency updated", "success");
+        fetchBotStatus();
+      } catch (err) {
+        showToast("Failed to update frequency", "error");
+      }
+    }
+
+    async function fetchBotLogs() {
+      try {
+        const res = await fetch('/api/bot/logs');
+        const data = await res.json();
+        if (data.success) {
+          renderLogs(data.logs);
+        }
+      } catch (err) {}
+    }
+
+    function renderLogs(logs) {
+      const feed = document.getElementById('bot-terminal-feed');
+      if (!logs || logs.length === 0) {
+        feed.innerHTML = '<div class="text-slate-500 italic">No events recorded yet. Click "Start 24/7 Bot" or "Run Cycle Now".</div>';
         return;
       }
 
-      container.innerHTML = imgs.map(img => `
-        <div class="relative group">
-          <img src="${img}" class="w-14 h-14 rounded-lg object-cover border border-slate-200">
-        </div>
-      `).join('');
+      feed.innerHTML = logs.map(l => {
+        let colorClass = "text-slate-300";
+        if (l.level === "success") colorClass = "text-emerald-400 font-semibold";
+        if (l.level === "error") colorClass = "text-rose-400 font-semibold";
+        if (l.level === "warn") colorClass = "text-amber-400";
+        
+        let linkHtml = "";
+        if (l.details && l.details.admin_url) {
+          linkHtml = ` <a href="${l.details.admin_url}" target="_blank" class="underline text-tech-400 ml-1">Open in Shopify &rarr;</a>`;
+        }
 
-      input.value = imgs.join(", ");
+        return `
+          <div class="leading-relaxed hover:bg-slate-800/50 px-1 py-0.5 rounded">
+            <span class="text-slate-500 select-none">[${l.timestamp.split(' ')[1]}]</span>
+            <span class="${colorClass}">${l.message}</span>${linkHtml}
+          </div>
+        `;
+      }).join('');
     }
 
-    async function runAIEnhancement() {
-      const title = document.getElementById("manual-title-input").value || currentRawData.title;
-      const desc = document.getElementById("manual-desc-input").value || currentRawData.description;
-      const cost = parseFloat(document.getElementById("supplier-cost-input").value) || 15.0;
-      const mult = parseFloat(document.getElementById("price-multiplier-select").value) || 2.5;
+    // TAB 2: Winning Smart Gadgets Catalog
+    async function fetchTrendingGadgets(category = '', query = '') {
+      try {
+        let url = '/api/trending';
+        const params = [];
+        if (category && category !== 'all') params.push(`category=${encodeURIComponent(category)}`);
+        if (query) params.push(`query=${encodeURIComponent(query)}`);
+        if (params.length) url += '?' + params.join('&');
 
-      const btn = document.getElementById("ai-enhance-btn");
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Writing...`;
-      btn.disabled = true;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          globalGadgets = data.gadgets;
+          renderGadgetsGrid(data.gadgets);
+          populateSupplierSelect(data.gadgets);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderGadgetsGrid(gadgets) {
+      const grid = document.getElementById('gadgets-grid');
+      if (!gadgets.length) {
+        grid.innerHTML = '<div class="col-span-full py-16 text-center text-slate-400 text-xs">No gadgets match your search filters.</div>';
+        return;
+      }
+
+      grid.innerHTML = gadgets.map(g => {
+        const profit = (g.suggested_retail - g.supplier_cost).toFixed(2);
+        const img = g.images && g.images.length ? g.images[0] : 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800';
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm card-hover flex flex-col justify-between">
+            <div>
+              <!-- Image Banner & Badges -->
+              <div class="relative h-48 bg-slate-100 overflow-hidden">
+                <img src="${img}" alt="${g.name}" class="w-full h-full object-cover">
+                <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                  <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-amber-300">
+                    <i class="fa-solid fa-fire text-amber-400"></i> ${g.virality_score}/100 Virality
+                  </span>
+                </div>
+                <span class="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/90 text-slate-700 shadow-sm">
+                  ${g.category.split('&')[0]}
+                </span>
+              </div>
+
+              <!-- Content -->
+              <div class="p-4 space-y-2.5">
+                <h3 class="text-sm font-bold text-slate-900 leading-snug line-clamp-1">${g.name}</h3>
+                <p class="text-[11px] text-slate-500 line-clamp-2">${g.problem_solved}</p>
+
+                <!-- Pricing Metrics Bar -->
+                <div class="bg-slate-50 rounded-xl p-2.5 grid grid-cols-3 text-center border border-slate-100 text-xs">
+                  <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Cost</span>
+                    <div class="font-bold text-slate-700">$${g.supplier_cost.toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Retail</span>
+                    <div class="font-bold text-slate-900">$${g.suggested_retail.toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase font-bold text-emerald-600">Profit</span>
+                    <div class="font-bold text-emerald-600">+$${profit}</div>
+                  </div>
+                </div>
+
+                <!-- Supplier info note -->
+                <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                  <span><i class="fa-solid fa-truck-fast text-slate-400"></i> ${g.shipping_time}</span>
+                  <a href="${g.supplier_link}" target="_blank" class="text-tech-600 hover:underline">Supplier Link &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Actions Footer -->
+            <div class="p-4 pt-0 border-t border-slate-100 flex gap-2">
+              <button onclick="quickPushGadget('${g.id}')" class="flex-1 py-2 px-3 text-xs font-bold text-white bg-tech-600 hover:bg-tech-700 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-upload"></i> Import to Shopify
+              </button>
+              <button onclick="openReviewModalForGadget('${g.id}')" title="Customize AI Copy &amp; Details" class="p-2 text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
+                <i class="fa-solid fa-wand-magic-sparkles text-tech-600"></i>
+              </button>
+              <button onclick="openInquiryForGadget('${g.id}')" title="Contact Supplier" class="p-2 text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
+                <i class="fa-solid fa-handshake text-amber-500"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterGadgets(category) {
+      if (category) {
+        document.querySelectorAll('.cat-chip').forEach(c => {
+          c.className = "cat-chip px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200";
+        });
+        event.target.className = "cat-chip px-3 py-1.5 text-xs font-bold rounded-lg bg-tech-600 text-white";
+      }
+
+      const activeChip = document.querySelector('.cat-chip.bg-tech-600');
+      let cat = activeChip ? activeChip.textContent.toLowerCase() : 'all';
+      if (cat.includes('all')) cat = '';
+      const query = document.getElementById('hunter-search-input').value;
+      fetchTrendingGadgets(cat, query);
+    }
+
+    // 1-Click Push Gadget
+    async function quickPushGadget(gadgetId) {
+      const gadget = globalGadgets.find(g => g.id === gadgetId);
+      if (!gadget) return;
+
+      showToast(`Generating AI copy & pushing '${gadget.name}'...`, 'info');
 
       try {
-        const res = await fetch("/api/enhance", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        // Step 1: AI Enhance
+        const enhRes = await fetch('/api/enhance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            raw_title: title,
-            raw_description: desc,
-            supplier_price: cost,
-            price_multiplier: mult
+            raw_title: gadget.raw_title,
+            raw_description: gadget.raw_description,
+            supplier_price: gadget.supplier_cost
           })
         });
+        const enhData = await enhRes.json();
+        const copy = enhData.data;
 
-        const resp = await res.json();
-        if (resp.success && resp.data) {
-          const d = resp.data;
-          document.getElementById("final-title").value = d.title;
-          document.getElementById("final-price").value = d.price;
-          document.getElementById("final-compare-price").value = d.compare_at_price;
-          document.getElementById("final-tags").value = d.tags;
-          document.getElementById("final-body-html").value = d.body_html;
-          document.getElementById("desc-preview-container").innerHTML = d.body_html;
+        // Step 2: Push to Shopify
+        const payload = {
+          title: copy.title,
+          body_html: copy.body_html,
+          price: copy.price,
+          compare_at_price: copy.compare_at_price,
+          status: "draft",
+          images: gadget.images,
+          tags: copy.tags,
+          sku: `SG-${gadget.id.slice(0, 6).toUpperCase()}`
+        };
+
+        const pushRes = await fetch('/api/shopify/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product: payload })
+        });
+        const pushData = await pushRes.json();
+
+        if (pushData.success) {
+          showToast(`Successfully imported '${copy.title}' to Shopify!`, 'success');
+          fetchStoreMetrics();
+        } else {
+          showToast(pushData.error || 'Failed to push to Shopify', 'error');
         }
-      } catch (e) {
-        alert("AI Generation failed: " + e.message);
-      } finally {
-        btn.innerHTML = `<i class="fa-solid fa-sparkles"></i> <span>Generate with AI</span>`;
-        btn.disabled = false;
+      } catch (err) {
+        showToast('Error executing import', 'error');
       }
     }
 
-    function toggleDescTab(tab) {
-      const preview = document.getElementById("desc-preview-container");
-      const code = document.getElementById("final-body-html");
-      const btnPreview = document.getElementById("desc-tab-preview");
-      const btnCode = document.getElementById("desc-tab-code");
+    // Modal: Review & Customize
+    async function openReviewModalForGadget(gadgetId) {
+      const gadget = globalGadgets.find(g => g.id === gadgetId);
+      if (!gadget) return;
 
-      if (tab === 'preview') {
-        preview.innerHTML = code.value;
-        preview.classList.remove('hidden');
-        code.classList.add('hidden');
-        btnPreview.className = "px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700";
-        btnCode.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-800";
-      } else {
-        code.classList.remove('hidden');
-        preview.classList.add('hidden');
-        btnCode.className = "px-2 py-0.5 rounded font-bold bg-blue-100 text-blue-700";
-        btnPreview.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-800";
-      }
-    }
+      showToast('Generating AI copy...', 'info');
 
-    async function pushToShopify() {
-      const title = document.getElementById("final-title").value.trim();
-      const price = document.getElementById("final-price").value.trim();
-      const comparePrice = document.getElementById("final-compare-price").value.trim();
-      const tags = document.getElementById("final-tags").value.trim();
-      const bodyHtml = document.getElementById("final-body-html").value || document.getElementById("desc-preview-container").innerHTML;
-      const status = document.getElementById("import-status-select").value;
-      const rawImgs = document.getElementById("final-image-input").value;
-      const images = rawImgs ? rawImgs.split(",").map(i => i.trim()).filter(Boolean) : [];
+      const enhRes = await fetch('/api/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          raw_title: gadget.raw_title,
+          raw_description: gadget.raw_description,
+          supplier_price: gadget.supplier_cost
+        })
+      });
+      const enhData = await enhRes.json();
+      const copy = enhData.data;
 
-      if (!title) return alert("Please specify a product title");
+      document.getElementById('modal-title').value = copy.title;
+      document.getElementById('modal-price').value = copy.price;
+      document.getElementById('modal-compare-price').value = copy.compare_at_price;
+      document.getElementById('modal-tags').value = copy.tags;
+      document.getElementById('modal-body-preview').innerHTML = copy.body_html;
 
-      const btn = document.getElementById("push-shopify-btn");
-      const resultBox = document.getElementById("import-result-box");
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Pushing to Shopify...`;
-      resultBox.classList.add("hidden");
-
-      const payload = {
-        product: {
-          title: title,
-          body_html: bodyHtml,
-          price: price,
-          compare_at_price: comparePrice,
-          tags: tags,
-          status: status,
-          images: images
-        }
+      activeModalPayload = {
+        title: copy.title,
+        body_html: copy.body_html,
+        images: gadget.images,
+        sku: `SG-${gadget.id.slice(0, 6).toUpperCase()}`
       };
 
+      document.getElementById('modal-review-import').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+      document.getElementById('modal-review-import').classList.add('hidden');
+    }
+
+    async function executeModalImport() {
+      if (!activeModalPayload) return;
+
+      const product = {
+        ...activeModalPayload,
+        title: document.getElementById('modal-title').value,
+        price: document.getElementById('modal-price').value,
+        compare_at_price: document.getElementById('modal-compare-price').value,
+        tags: document.getElementById('modal-tags').value,
+        status: document.getElementById('modal-status').value
+      };
+
+      showToast("Importing to Shopify...", "info");
       try {
-        const res = await fetch("/api/shopify/import", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        const res = await fetch('/api/shopify/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product })
         });
         const data = await res.json();
-
-        resultBox.classList.remove("hidden");
         if (data.success) {
-          resultBox.className = "p-4 rounded-xl text-xs bg-emerald-500/20 border border-emerald-400/30 text-emerald-100";
-          resultBox.innerHTML = `
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="font-bold text-sm text-emerald-300">✅ Successfully Imported to Shopify!</span>
-                <p class="mt-1 text-emerald-100">Product created as <strong>${data.status.toUpperCase()}</strong>.</p>
-              </div>
-              <a href="${data.admin_url}" target="_blank" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg shadow inline-flex items-center gap-1.5 transition">
-                <span>View in Shopify Admin</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-              </a>
-            </div>
-          `;
+          showToast(`Imported as ${product.status.toUpperCase()}!`, 'success');
+          closeReviewModal();
+          fetchStoreMetrics();
         } else {
-          resultBox.className = "p-4 rounded-xl text-xs bg-rose-500/20 border border-rose-400/30 text-rose-100";
-          resultBox.innerHTML = `
-            <span class="font-bold text-rose-300">❌ Import Failed</span>
-            <p class="mt-1">${data.error || "Could not push product. Check your Shopify credentials."}</p>
-          `;
+          showToast(data.error || 'Shopify Error', 'error');
         }
-      } catch (e) {
-        resultBox.classList.remove("hidden");
-        resultBox.className = "p-4 rounded-xl text-xs bg-rose-500/20 border border-rose-400/30 text-rose-100";
-        resultBox.innerHTML = `<span>Error: ${e.message}</span>`;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-brands fa-shopify text-lg text-emerald-600"></i><span>Push Product to Shopify Store</span>`;
+      } catch (err) {
+        showToast('Error communicating with server', 'error');
       }
     }
 
-    // Modal & Settings handlers
+    // Modal: Scrape URL
+    function openExtractModal() {
+      document.getElementById('modal-extract-url').classList.remove('hidden');
+    }
+    function closeExtractModal() {
+      document.getElementById('modal-extract-url').classList.add('hidden');
+    }
+    async function executeExtract() {
+      const url = document.getElementById('extract-modal-url').value.trim();
+      if (!url) return;
+      showToast("Extracting product metadata...", "info");
+
+      try {
+        const res = await fetch('/api/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await res.json();
+        if (!data.success) {
+          showToast(data.error || 'Failed to extract', 'error');
+          return;
+        }
+
+        closeExtractModal();
+        // Send directly to review modal
+        showToast("Enhancing copy with AI...", "info");
+        const enhRes = await fetch('/api/enhance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            raw_title: data.title,
+            raw_description: data.description,
+            supplier_price: data.price || 15.0
+          })
+        });
+        const enhData = await enhRes.json();
+        const copy = enhData.data;
+
+        document.getElementById('modal-title').value = copy.title;
+        document.getElementById('modal-price').value = copy.price;
+        document.getElementById('modal-compare-price').value = copy.compare_at_price;
+        document.getElementById('modal-tags').value = copy.tags;
+        document.getElementById('modal-body-preview').innerHTML = copy.body_html;
+
+        activeModalPayload = {
+          title: copy.title,
+          body_html: copy.body_html,
+          images: data.images,
+          sku: "SG-EXTRACT"
+        };
+        document.getElementById('modal-review-import').classList.remove('hidden');
+      } catch (err) {
+        showToast("Error extracting from link", "error");
+      }
+    }
+
+    // TAB 3: Suppliers & B2B Outreach
+    async function loadSuppliers() {
+      try {
+        const res = await fetch('/api/suppliers');
+        const data = await res.json();
+        if (data.success) {
+          renderSuppliersList(data.suppliers);
+        }
+        loadSupplierHistory();
+      } catch (err) {}
+    }
+
+    function renderSuppliersList(suppliers) {
+      const list = document.getElementById('suppliers-list');
+      if (!suppliers.length) return;
+
+      list.innerHTML = suppliers.map(s => `
+        <div class="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-800">${s.name}</h4>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-semibold">${s.rating}</span>
+          </div>
+          <div class="text-[11px] text-slate-500">Platform: <span class="font-medium text-slate-700">${s.platform}</span></div>
+          <div class="text-[11px] text-slate-500">Shipping: <span class="font-medium text-slate-700">${s.shipping_time}</span></div>
+          <div class="pt-1 flex flex-wrap gap-1">
+            ${s.gadgets.map(g => `<span class="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-600">${g.name.split(' ')[0]} ${g.name.split(' ')[1] || ''}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function populateSupplierSelect(gadgets) {
+      const select = document.getElementById('inquiry-gadget-select');
+      select.innerHTML = '<option value="">-- Choose Gadget to Contact Supplier --</option>' +
+        gadgets.map(g => `<option value="${g.id}">${g.name} ($${g.supplier_cost.toFixed(2)})</option>`).join('');
+    }
+
+    async function generateSupplierInquiryUI(gadgetId) {
+      if (!gadgetId) return;
+      try {
+        const res = await fetch('/api/suppliers/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gadget_id: gadgetId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const inq = data.inquiry;
+          document.getElementById('inquiry-text-en').value = inq.message_en;
+          document.getElementById('inquiry-text-zh').value = inq.message_zh;
+          document.getElementById('inquiry-whatsapp-link').href = inq.whatsapp_url;
+          document.getElementById('inquiry-preview-box').classList.remove('hidden');
+          loadSupplierHistory();
+        }
+      } catch (err) {}
+    }
+
+    function openInquiryForGadget(gadgetId) {
+      switchMainTab('tab-suppliers');
+      document.getElementById('inquiry-gadget-select').value = gadgetId;
+      generateSupplierInquiryUI(gadgetId);
+    }
+
+    function switchLangTab(lang) {
+      if (lang === 'en') {
+        document.getElementById('box-inquiry-en').classList.remove('hidden');
+        document.getElementById('box-inquiry-zh').classList.add('hidden');
+        document.getElementById('btn-lang-en').className = "pb-2 text-tech-600 border-b-2 border-tech-600 px-3";
+        document.getElementById('btn-lang-zh').className = "pb-2 text-slate-500 border-b-2 border-transparent hover:text-slate-700 px-3";
+      } else {
+        document.getElementById('box-inquiry-en').classList.add('hidden');
+        document.getElementById('box-inquiry-zh').classList.remove('hidden');
+        document.getElementById('btn-lang-zh').className = "pb-2 text-tech-600 border-b-2 border-tech-600 px-3";
+        document.getElementById('btn-lang-en').className = "pb-2 text-slate-500 border-b-2 border-transparent hover:text-slate-700 px-3";
+      }
+    }
+
+    async function loadSupplierHistory() {
+      try {
+        const res = await fetch('/api/suppliers/history');
+        const data = await res.json();
+        const list = document.getElementById('supplier-history-list');
+        if (!data.history || !data.history.length) {
+          list.innerHTML = '<div class="text-slate-400 italic">No supplier inquiries dispatched yet.</div>';
+          return;
+        }
+
+        list.innerHTML = data.history.map(h => `
+          <div class="p-2 border border-slate-100 rounded bg-slate-50 flex items-center justify-between">
+            <div>
+              <span class="font-bold text-slate-800">${h.gadget_name}</span>
+              <span class="text-slate-500 text-[10px] ml-2">(${h.supplier_name})</span>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">${h.status}</span>
+          </div>
+        `).join('');
+      } catch (err) {}
+    }
+
+    function logSupplierActionComplete() {
+      showToast("Supplier marked as contacted!", "success");
+    }
+
+    // TAB 4: Shopify Store Manager
+    function switchStoreSubtab(subtab) {
+      if (subtab === 'products') {
+        document.getElementById('store-subtab-products').classList.remove('hidden');
+        document.getElementById('store-subtab-orders').classList.add('hidden');
+        document.getElementById('subtab-btn-products').className = "px-4 py-2 text-xs font-bold rounded-xl bg-tech-600 text-white shadow-sm";
+        document.getElementById('subtab-btn-orders').className = "px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+      } else {
+        document.getElementById('store-subtab-products').classList.add('hidden');
+        document.getElementById('store-subtab-orders').classList.remove('hidden');
+        document.getElementById('subtab-btn-orders').className = "px-4 py-2 text-xs font-bold rounded-xl bg-tech-600 text-white shadow-sm";
+        document.getElementById('subtab-btn-products').className = "px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+      }
+    }
+
+    async function loadStoreData() {
+      showToast("Syncing with live Shopify store...", "info");
+      await fetchStoreMetrics();
+      await fetchStoreProducts();
+      await fetchStoreOrders();
+    }
+
+    async function fetchStoreMetrics() {
+      try {
+        const res = await fetch('/api/store/metrics');
+        const data = await res.json();
+        if (data.success && data.connected) {
+          document.getElementById('metric-products-count').textContent = data.total_products;
+          document.getElementById('metric-products-breakdown').textContent = `Active: ${data.active_products} | Draft: ${data.draft_products}`;
+          document.getElementById('metric-orders-unfulfilled').textContent = `${data.unfulfilled_orders} Unfulfilled`;
+          document.getElementById('metric-revenue').textContent = `Revenue: $${data.total_revenue.toFixed(2)}`;
+          document.getElementById('store-products-count-badge').textContent = data.total_products;
+          document.getElementById('store-orders-count-badge').textContent = data.total_orders;
+        } else {
+          document.getElementById('metric-products-count').textContent = "Not Connected";
+        }
+      } catch (err) {}
+    }
+
+    async function fetchStoreProducts() {
+      const tbody = document.getElementById('store-products-table-body');
+      try {
+        const res = await fetch('/api/store/products');
+        const data = await res.json();
+        if (!data.success || !data.products.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">No products found in store or Shopify credentials pending.</td></tr>';
+          return;
+        }
+
+        globalStoreProducts = data.products;
+        tbody.innerHTML = data.products.map(p => {
+          const statusBadge = p.status === 'active' 
+            ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">Active</span>'
+            : '<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">Draft</span>';
+
+          const imgTag = p.image 
+            ? `<img src="${p.image}" class="w-10 h-10 object-cover rounded-lg border border-slate-200">`
+            : '<div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400"><i class="fa-solid fa-image"></i></div>';
+
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-4 flex items-center gap-3">
+                ${imgTag}
+                <div>
+                  <div class="font-bold text-slate-900">${p.title}</div>
+                  <div class="text-[11px] text-slate-400">SKU: ${p.sku || 'N/A'} | Vendor: ${p.vendor || 'Store'}</div>
+                </div>
+              </td>
+              <td class="p-4">${statusBadge}</td>
+              <td class="p-4 font-bold text-slate-900">$${parseFloat(p.price).toFixed(2)}</td>
+              <td class="p-4 text-slate-400">${p.compare_at_price ? '$' + parseFloat(p.compare_at_price).toFixed(2) : '-'}</td>
+              <td class="p-4 text-right space-x-2">
+                <button onclick="toggleProductStatus(${p.id}, '${p.status === 'active' ? 'draft' : 'active'}')" class="px-2.5 py-1 text-[11px] font-semibold border rounded-lg hover:bg-slate-100">
+                  ${p.status === 'active' ? 'Set Draft' : 'Set Active'}
+                </button>
+                <a href="${p.admin_url}" target="_blank" class="px-2.5 py-1 text-[11px] font-semibold text-tech-600 bg-tech-50 hover:bg-tech-100 rounded-lg">
+                  Shopify &rarr;
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-rose-500">Failed to load store catalog.</td></tr>';
+      }
+    }
+
+    async function toggleProductStatus(productId, targetStatus) {
+      showToast(`Setting product to ${targetStatus.toUpperCase()}...`, "info");
+      try {
+        const res = await fetch(`/api/store/products/${productId}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: targetStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, "success");
+          fetchStoreProducts();
+          fetchStoreMetrics();
+        } else {
+          showToast(data.error || 'Failed to update status', "error");
+        }
+      } catch (err) {}
+    }
+
+    async function fetchStoreOrders() {
+      const tbody = document.getElementById('store-orders-table-body');
+      try {
+        const res = await fetch('/api/store/orders');
+        const data = await res.json();
+        if (!data.success || !data.orders.length) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400">No store orders found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.orders.map(o => {
+          const cust = o.customer ? `${o.customer.first_name || ''} ${o.customer.last_name || ''}`.trim() : 'Customer';
+          const country = o.shipping_address ? o.shipping_address.country : 'Worldwide';
+          const itemsCount = o.line_items ? o.line_items.length : 0;
+          const statusBadge = o.fulfillment_status === 'fulfilled'
+            ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">Fulfilled</span>'
+            : '<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">Unfulfilled</span>';
+
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-4 font-bold text-slate-900">${o.name}</td>
+              <td class="p-4">
+                <div class="font-medium text-slate-800">${cust}</div>
+                <div class="text-[11px] text-slate-400">${country}</div>
+              </td>
+              <td class="p-4">${itemsCount} item(s)</td>
+              <td class="p-4 font-bold text-slate-900">$${parseFloat(o.total_price).toFixed(2)}</td>
+              <td class="p-4">${statusBadge}</td>
+              <td class="p-4 text-right">
+                <button onclick="openOrderDispatchSlip(${o.id})" class="px-3 py-1.5 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg shadow transition flex items-center gap-1.5 ml-auto">
+                  <i class="fa-solid fa-file-invoice"></i> Dropship Slip
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400">Unable to retrieve orders.</td></tr>';
+      }
+    }
+
+    async function openOrderDispatchSlip(orderId) {
+      showToast("Generating supplier dropship slip...", "info");
+      try {
+        const res = await fetch(`/api/store/orders/${orderId}/supplier-dispatch`);
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('dispatch-text-content').value = data.dispatch.dispatch_text;
+          document.getElementById('modal-dispatch-slip').classList.remove('hidden');
+        } else {
+          showToast(data.error || "Order not found", "error");
+        }
+      } catch (err) {}
+    }
+
+    function closeDispatchModal() {
+      document.getElementById('modal-dispatch-slip').classList.add('hidden');
+    }
+
+    // Modal: Settings
     function openSettingsModal() {
-      document.getElementById("settings-modal").classList.remove("hidden");
+      document.getElementById('modal-settings').classList.remove('hidden');
     }
     function closeSettingsModal() {
-      document.getElementById("settings-modal").classList.add("hidden");
-      document.getElementById("connection-test-result").classList.add("hidden");
+      document.getElementById('modal-settings').classList.add('hidden');
+    }
+
+    async function saveSettings() {
+      const updates = {
+        shopify_domain: document.getElementById('setting-domain').value.trim(),
+        shopify_token: document.getElementById('setting-token').value.trim(),
+        gemini_key: document.getElementById('setting-gemini').value.trim(),
+        price_multiplier: document.getElementById('setting-multiplier').value.trim()
+      };
+
+      showToast("Saving settings...", "info");
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Settings saved successfully!", "success");
+          closeSettingsModal();
+          fetchSystemStatus();
+        } else {
+          showToast("Failed to save settings", "error");
+        }
+      } catch (err) {
+        showToast("Error updating settings", "error");
+      }
     }
 
     async function testShopifyConnection() {
-      const domain = document.getElementById("setting-store-domain").value.trim();
-      const token = document.getElementById("setting-store-token").value.trim();
-      const resultDiv = document.getElementById("connection-test-result");
+      const domain = document.getElementById('setting-domain').value.trim();
+      const token = document.getElementById('setting-token').value.trim();
 
-      resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-slate-100 text-slate-600 block";
-      resultDiv.innerText = "Testing connection...";
-
+      showToast("Testing Shopify connection...", "info");
       try {
-        const res = await fetch("/api/shopify/test", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch('/api/shopify/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ domain, token })
         });
         const data = await res.json();
         if (data.success) {
-          resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 block";
-          resultDiv.innerText = `✅ ${data.message}`;
+          showToast(data.message, "success");
         } else {
-          resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-rose-50 text-rose-700 border border-rose-200 block";
-          resultDiv.innerText = `❌ ${data.error}`;
+          showToast(data.error || "Connection test failed", "error");
         }
-      } catch (e) {
-        resultDiv.className = "mt-2 text-[11px] p-2 rounded bg-rose-50 text-rose-700 border border-rose-200 block";
-        resultDiv.innerText = `❌ Test failed: ${e.message}`;
+      } catch (err) {
+        showToast("Network error connecting to Shopify", "error");
       }
     }
 
-    async function saveSettings() {
-      const domain = document.getElementById("setting-store-domain").value.trim();
-      const token = document.getElementById("setting-store-token").value.trim();
-      const gemini = document.getElementById("setting-gemini-key").value.trim();
-
-      await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shopify_domain: domain,
-          shopify_token: token,
-          gemini_key: gemini
-        })
-      });
-
-      closeSettingsModal();
-      fetchStatus();
+    // Helper: Copy to Clipboard
+    function copyToClipboard(elementId) {
+      const el = document.getElementById(elementId);
+      el.select();
+      navigator.clipboard.writeText(el.value);
+      showToast("Copied to clipboard!", "success");
     }
   </script>
 </body>
 </html>
-

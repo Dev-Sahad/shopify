@@ -16,3 +16,6 @@ ENV/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local bot state & logs
+data/*.json
