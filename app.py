@@ -393,11 +393,15 @@ if __name__ == "__main__":
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             return s.connect_ex(('127.0.0.1', port_num)) == 0
 
-    port = 5000
-    if is_port_in_use(port):
-        port = 5050
-        while is_port_in_use(port):
-            port += 1
+    env_port = os.environ.get("PORT")
+    if env_port:
+        port = int(env_port)
+    else:
+        port = 5000
+        if is_port_in_use(port):
+            port = 5050
+            while is_port_in_use(port):
+                port += 1
 
     app_url = f"http://127.0.0.1:{port}"
     print(f"\n========================================================")
@@ -412,6 +416,7 @@ if __name__ == "__main__":
         except Exception:
             pass
 
-    threading.Thread(target=auto_open_browser, daemon=True).start()
+    if not env_port and not os.environ.get("RENDER"):
+        threading.Thread(target=auto_open_browser, daemon=True).start()
     app.run(host="0.0.0.0", port=port, debug=False)
 
